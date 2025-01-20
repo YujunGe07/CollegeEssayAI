@@ -1,4 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
+    const uploadArea = document.getElementById('uploadArea');
+    const resumeUpload = document.getElementById('resumeUpload');
+    const essayEditor = document.querySelector('.essay-editor');
+
     const STAGES = ['planning-stage', 'writing-stage', 'feedback-stage'];
     const progressSteps = document.querySelectorAll('.progress-step');
     let currentStageIndex = 0;
@@ -176,37 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
         essayEditor.value = savedDraft;
     }
 
-    // Resume upload functionality
-    const uploadArea = document.getElementById('uploadArea');
-    const resumeUpload = document.getElementById('resumeUpload');
-
-    if (uploadArea && resumeUpload) {
-        uploadArea.addEventListener('click', () => {
-            resumeUpload.click();
-        });
-
-        uploadArea.addEventListener('dragover', (e) => {
-            e.preventDefault();
-            uploadArea.classList.add('dragover');
-        });
-
-        uploadArea.addEventListener('dragleave', () => {
-            uploadArea.classList.remove('dragover');
-        });
-
-        uploadArea.addEventListener('drop', (e) => {
-            e.preventDefault();
-            uploadArea.classList.remove('dragover');
-            const file = e.dataTransfer.files[0];
-            handleResumeUpload(file);
-        });
-
-        resumeUpload.addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            handleResumeUpload(file);
-        });
-    }
-
     // Chat functionality
     const chatMessages = document.getElementById('chatMessages');
     const userInput = document.getElementById('userInput');
@@ -246,10 +219,15 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 1000);
     }
 
-    sendMessage.addEventListener('click', handleUserMessage);
-    userInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') handleUserMessage();
-    });
+    if (userInput && sendMessage) {
+        sendMessage.addEventListener('click', handleUserMessage);
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                handleUserMessage();
+            }
+        });
+    }
 
     function generateBotResponse(message) {
         // This is where you'd integrate with a real AI service
@@ -576,6 +554,38 @@ document.addEventListener('DOMContentLoaded', () => {
         clearPromptBtn.addEventListener('click', () => {
             essayPrompt.value = '';
             essayPrompt.focus();
+        });
+    }
+
+    // Add resume upload event listeners
+    if (uploadArea && resumeUpload) {
+        uploadArea.addEventListener('click', () => {
+            resumeUpload.click();
+        });
+
+        resumeUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                handleResumeUpload(file);
+            }
+        });
+
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const file = e.dataTransfer.files[0];
+            if (file) {
+                handleResumeUpload(file);
+            }
         });
     }
 }); 
