@@ -1,0 +1,1122 @@
+:root {
+    --primary-color: #2B4B5C;
+    --background-color: #f8fafc;
+    --card-color: #ffffff;
+    --text-color: #1e293b;
+    --border-color: #e2e8f0;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+nav {
+    background-color: var(--card-color);
+    padding: 1.25rem 3rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.logo {
+    font-weight: 600;
+    font-size: 1.25rem;
+    color: var(--primary-color);
+}
+
+.progress-container {
+    flex-grow: 1;
+    max-width: 900px;
+    margin: 0 8rem;
+}
+
+.progress-steps {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    padding: 0 2rem;
+}
+
+.progress-steps::before {
+    content: '';
+    position: absolute;
+    top: 1.125rem;
+    left: 8rem;
+    right: 8rem;
+    height: 2px;
+    background-color: #e2e8f0;
+    z-index: 0;
+}
+
+.progress-steps::after {
+    content: '';
+    position: absolute;
+    top: 1.125rem;
+    left: 8rem;
+    height: 2px;
+    background-color: #1e293b;
+    z-index: 0;
+    transition: width 0.3s ease;
+}
+
+.progress-steps[data-current="planning"]::after {
+    width: 0;
+}
+
+.progress-steps[data-current="writing"]::after {
+    width: calc((100% - 16rem) / 2);
+}
+
+.progress-steps[data-current="feedback"]::after {
+    width: calc(100% - 16rem);
+}
+
+.progress-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.75rem;
+    position: relative;
+    z-index: 1;
+    min-width: 140px;
+}
+
+.step-circle {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    border: 1.5px solid #e2e8f0;
+    background-color: white;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    position: relative;
+    z-index: 1;
+}
+
+.step-circle:hover {
+    transform: scale(1.05);
+    border-color: #94a3b8;
+}
+
+.progress-step.active:not(.current) .step-circle {
+    background-color: #47626d;
+    border-color: #47626d;
+}
+
+.progress-step.current .step-circle {
+    background-color: #1e293b;
+    border-color: #1e293b;
+    transform: scale(1.1);
+}
+
+.progress-step.completed .step-circle {
+    background-color: white;
+    border-color: #94a3b8;
+}
+
+.step-label {
+    color: #94a3b8;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.progress-step.active:not(.current) .step-label {
+    color: #47626d;
+    font-weight: 600;
+}
+
+.progress-step.current .step-label {
+    color: #1e293b;
+    font-weight: 700;
+}
+
+.progress-step.active::after {
+    content: '';
+    position: absolute;
+    top: 1.125rem;
+    left: 50%;
+    width: calc(50% + 4rem);
+    height: 1px;
+    background-color: #47626d;
+    z-index: -1;
+}
+
+.progress-step.current::after {
+    display: none;
+}
+
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.progress-label {
+    color: #47626d;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+.menu-btn, .notes-btn {
+    background: none;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    transition: all 0.2s;
+}
+
+.menu-btn:hover, .notes-btn:hover {
+    color: #1e293b;
+}
+
+.notes-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s;
+}
+
+.notes-btn::after {
+    content: 'NOTES';
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    color: #94a3b8;
+}
+
+.notes-btn {
+    font-size: 1.5rem;
+    color: #94a3b8;
+}
+
+.notes-btn:hover {
+    transform: scale(1.05);
+}
+
+.notes-btn:hover::after {
+    color: #1e293b;
+}
+
+main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.stage-container {
+    display: flex;
+    gap: 2rem;
+    max-width: 100%;
+    margin: 0 auto;
+    padding: 1rem;
+    padding-top: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.card {
+    background-color: var(--card-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+h1 {
+    font-size: 1.875rem;
+    margin-bottom: 1rem;
+    margin-top: -0.5rem;
+    color: var(--text-color);
+}
+
+h2 {
+    font-size: 1.25rem;
+    margin-bottom: 1rem;
+    color: var(--text-color);
+}
+
+.prompt-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+}
+
+.prompt-btn, .tool-btn, .feedback-btn {
+    background-color: var(--background-color);
+    border: 1px solid var(--border-color);
+    padding: 0.75rem 1rem;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 0.875rem;
+}
+
+.prompt-btn:hover, .tool-btn:hover, .feedback-btn:hover {
+    background-color: #2B4B5C;
+    color: white;
+    border-color: #2B4B5C;
+}
+
+textarea {
+    width: 100%;
+    min-height: 200px;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    margin: 1rem 0;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.next-btn {
+    background-color: #2B4B5C;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.next-btn:hover {
+    opacity: 0.9;
+}
+
+.writing-tools, .feedback-section {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (max-width: 1200px) {
+    .progress-container {
+        margin: 0 6rem;
+    }
+
+    .progress-steps::before {
+        left: 6rem;
+        right: 6rem;
+    }
+}
+
+@media (max-width: 1024px) {
+    .progress-container {
+        margin: 0 4rem;
+    }
+
+    .progress-steps::before {
+        left: 4rem;
+        right: 4rem;
+    }
+
+    .progress-step {
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 768px) {
+    nav {
+        padding: 0.75rem 1.5rem;
+    }
+
+    .progress-container {
+        margin: 0 2rem;
+    }
+
+    .progress-steps::before {
+        left: 2rem;
+        right: 2rem;
+    }
+
+    .progress-step {
+        min-width: 100px;
+    }
+
+    .step-circle {
+        width: 2rem;
+        height: 2rem;
+    }
+
+    .notes-btn {
+        font-size: 1.25rem;
+    }
+}
+
+/* Upload Card Styles */
+.upload-card {
+    text-align: center;
+}
+
+.upload-area {
+    border: 2px dashed var(--border-color);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    margin: 1rem 0;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.upload-area:hover {
+    border-color: #2B4B5C;
+    background-color: rgba(43, 75, 92, 0.05);
+}
+
+.upload-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.upload-icon {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.upload-link {
+    color: #2B4B5C;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.helper-text {
+    color: #64748b;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+}
+
+/* Chat Card Styles */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 400px;
+}
+
+.chat-messages {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.message {
+    display: flex;
+    gap: 0.75rem;
+    max-width: 80%;
+}
+
+.message.user {
+    margin-left: auto;
+    flex-direction: row-reverse;
+}
+
+.message-content {
+    background-color: var(--background-color);
+    padding: 0.75rem 1rem;
+    border-radius: 1rem;
+    border-bottom-left-radius: 0.25rem;
+}
+
+.message.user .message-content {
+    background-color: #2B4B5C;
+    color: white;
+    border-radius: 1rem;
+    border-bottom-right-radius: 0.25rem;
+}
+
+.bot-avatar {
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--background-color);
+    border-radius: 50%;
+}
+
+.chat-input {
+    display: flex;
+    gap: 0.75rem;
+    padding: 1rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.chat-input input {
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-family: inherit;
+    background-color: var(--background-color);
+    font-size: 0.875rem;
+}
+
+.chat-input input:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(43, 75, 92, 0.1);
+}
+
+/* New Send Button Styles */
+#sendMessage {
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.75rem 1.25rem;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.875rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.2s ease;
+}
+
+#sendMessage::after {
+    content: '↗️';
+    font-size: 1rem;
+}
+
+#sendMessage:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+#sendMessage:active {
+    transform: translateY(0);
+}
+
+/* Suggestions Card Styles */
+.suggestions-container {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.suggestion-item {
+    background-color: var(--background-color);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+}
+
+.suggestion-item:hover {
+    background-color: #EFF6FF;
+    border: 1px solid #2B4B5C;
+    color: #2B4B5C;
+}
+
+/* Essay Prompt Styles */
+.prompt-card {
+    margin-bottom: 2rem;
+}
+
+.prompt-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.prompt-input-section,
+.prompt-analysis-section {
+    display: flex;
+    flex-direction: column;
+}
+
+.prompt-input-container {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    height: 100%;
+}
+
+.prompt-input {
+    width: 100%;
+    flex-grow: 1;
+    min-height: 200px;
+    padding: 1rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.375rem;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    resize: vertical;
+    background-color: var(--background-color);
+}
+
+.analysis-content {
+    background-color: var(--background-color);
+    border-radius: 0.375rem;
+    padding: 1rem;
+    height: 100%;
+    min-height: 200px;
+}
+
+.analysis-content ul {
+    margin: 1rem 0;
+    padding-left: 1.5rem;
+}
+
+.analysis-content li {
+    margin-bottom: 0.5rem;
+}
+
+.analysis-highlight {
+    color: #2B4B5C;
+    font-weight: 500;
+}
+
+.prompt-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.prompt-btn {
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.prompt-btn.secondary {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+}
+
+.prompt-btn.secondary:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+/* Update media query for mobile */
+@media (max-width: 768px) {
+    .prompt-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Side Navigation Styles */
+.side-nav {
+    width: 20%;
+    min-width: 200px;
+    flex-shrink: 0;
+    background-color: var(--card-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    height: fit-content;
+    position: sticky;
+    top: calc(4.5rem + 2.5rem);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    margin-top: 3.5rem;
+}
+
+.nav-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.section-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border: none;
+    background: none;
+    width: 100%;
+    text-align: left;
+    border-radius: 0.375rem;
+    color: #64748b;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.section-btn:hover {
+    background-color: var(--background-color);
+    color: var(--text-color);
+}
+
+.section-btn.active {
+    background-color: #2B4B5C;
+    color: white;
+}
+
+.section-icon {
+    font-size: 1.25rem;
+}
+
+/* Main Content Styles */
+.main-content {
+    flex-grow: 1;
+    width: 80%;
+}
+
+/* Update media query */
+@media (max-width: 768px) {
+    .stage-container {
+        flex-direction: column;
+        padding: 0.5rem;
+    }
+
+    .side-nav {
+        width: 100%;
+        position: static;
+        margin-bottom: 1rem;
+    }
+
+    .nav-sections {
+        flex-direction: row;
+        overflow-x: auto;
+        padding-bottom: 0.5rem;
+    }
+
+    .section-btn {
+        white-space: nowrap;
+    }
+
+    .main-content {
+        width: 100%;
+    }
+
+    main {
+        padding: 0 1rem;
+    }
+}
+
+/* Completed stage */
+.progress-step.completed .step-circle {
+    border-color: #94a3b8;  /* Medium color for completed */
+    background-color: white;
+}
+
+/* Progress line for completed sections */
+.progress-step.completed::after {
+    content: '';
+    position: absolute;
+    top: 1.125rem;
+    left: 50%;
+    width: calc(50% + 4rem);
+    height: 1px;
+    background-color: #94a3b8;  /* Medium color for completed sections */
+    z-index: -1;
+}
+
+/* Labels */
+.step-label {
+    color: #94a3b8;  /* Light color for inactive */
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    transition: all 0.3s ease;
+    text-align: center;
+    white-space: nowrap;
+}
+
+.progress-step.completed .step-label {
+    color: #64748b;  /* Medium color for completed */
+    font-weight: 600;
+}
+
+.progress-step.current .step-label {
+    color: #1e293b;  /* Dark color for current */
+    font-weight: 700;
+}
+
+/* Notes Popup Styles */
+.notes-popup {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+.notes-popup.active {
+    display: flex;
+}
+
+.notes-content {
+    background-color: white;
+    width: 90%;
+    max-width: 800px;
+    border-radius: 0.5rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    max-height: 80vh;
+}
+
+.notes-header {
+    padding: 1rem 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.notes-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: var(--text-color);
+}
+
+.close-notes {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: #64748b;
+    cursor: pointer;
+    padding: 0.5rem;
+    line-height: 1;
+}
+
+.close-notes:hover {
+    color: #1e293b;
+}
+
+.notes-textarea {
+    flex-grow: 1;
+    min-height: 400px;
+    padding: 1.5rem;
+    border: none;
+    resize: none;
+    background-color: var(--background-color);
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.6;
+}
+
+.notes-textarea:focus {
+    outline: none;
+}
+
+.notes-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid var(--border-color);
+    display: flex;
+    justify-content: flex-end;
+}
+
+.save-notes {
+    background-color: #2B4B5C;
+    color: white;
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 0.375rem;
+    cursor: pointer;
+    font-weight: 500;
+    transition: opacity 0.2s;
+}
+
+.save-notes:hover {
+    opacity: 0.9;
+}
+
+/* Add styles for relevant activities section */
+.relevant-activities {
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+    text-align: left;
+}
+
+.relevant-activities.hidden {
+    display: none;
+}
+
+.activities-list {
+    margin-top: 1rem;
+}
+
+.activity-item {
+    background-color: var(--background-color);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1rem;
+    border: 1px solid var(--border-color);
+}
+
+.activity-title {
+    font-weight: 600;
+    color: var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+
+.activity-relevance {
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.relevance-score {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background-color: #EFF6FF;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    margin-left: 0.5rem;
+    color: var(--primary-color);
+}
+
+/* Add loading spinner styles */
+.loading-spinner {
+    display: inline-block;
+    width: 2rem;
+    height: 2rem;
+    border: 3px solid var(--background-color);
+    border-radius: 50%;
+    border-top-color: var(--primary-color);
+    animation: spin 1s linear infinite;
+    margin-bottom: 0.5rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+/* Add progress styles */
+.analysis-progress {
+    width: 100%;
+    max-width: 200px;
+    height: 4px;
+    background-color: var(--background-color);
+    border-radius: 2px;
+    margin: 0.5rem auto;
+    overflow: hidden;
+}
+
+.progress-bar {
+    width: 0;
+    height: 100%;
+    background-color: var(--primary-color);
+    transition: width 2s ease;
+}
+
+/* Writing Stage Styles */
+.writing-section {
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.prompt-display {
+    background-color: var(--background-color);
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 2rem;
+    border: 1px solid var(--border-color);
+}
+
+.prompt-display h3 {
+    font-size: 1rem;
+    color: var(--primary-color);
+    margin-bottom: 0.75rem;
+}
+
+.prompt-display p {
+    color: var(--text-color);
+    line-height: 1.6;
+    font-size: 0.875rem;
+}
+
+.writing-container {
+    background-color: var(--card-color);
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.writing-tools {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tool-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.875rem;
+    transition: all 0.2s;
+}
+
+.tool-icon {
+    font-size: 1.25rem;
+}
+
+.editor-container {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.essay-editor {
+    width: 100%;
+    min-height: 400px;
+    padding: 1.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: 0.5rem;
+    font-family: inherit;
+    font-size: 1rem;
+    line-height: 1.8;
+    resize: vertical;
+    background-color: white;
+    margin: 0;
+}
+
+.essay-editor:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(43, 75, 92, 0.1);
+}
+
+.writing-progress {
+    margin-top: 1rem;
+}
+
+.progress-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: #64748b;
+}
+
+.progress-percentage {
+    font-weight: 500;
+    color: var(--primary-color);
+}
+
+.progress-track {
+    height: 4px;
+    background-color: var(--background-color);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    background-color: var(--primary-color);
+    border-radius: 2px;
+    transition: width 0.3s ease;
+}
+
+/* Update next button for writing stage */
+.writing-container .next-btn {
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+@media (max-width: 768px) {
+    .writing-section {
+        padding: 0 0.5rem;
+    }
+    
+    .writing-tools {
+        flex-wrap: wrap;
+    }
+    
+    .tool-btn {
+        flex: 1;
+        min-width: 120px;
+    }
+}
+
+/* Update tool button styles */
+.tool-btn:first-child {
+    cursor: default;  /* Remove pointer cursor from word count display */
+}
+
+.tool-btn:first-child:hover {
+    background-color: var(--background-color);  /* Remove hover effect from word count */
+    color: inherit;
+    border-color: var(--border-color);
+}
+
+#wordCount {
+    font-weight: 500;
+}
+
+/* Add styles for count display */
+.count-display {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+}
+
+.count-divider {
+    color: #94a3b8;
+    font-size: 0.5rem;
+}
+
+#wordCount, #charCount {
+    font-weight: 500;
+}
+
+/* Update first tool button width */
+.tool-btn:first-child {
+    min-width: fit-content;
+    padding-right: 1.5rem;
+} 

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>College Essay Guide</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap">
+</head>
+<body>
+    <nav>
+        <button class="menu-btn">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="12" cy="6" r="2" fill="currentColor"/>
+                <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                <circle cx="12" cy="18" r="2" fill="currentColor"/>
+            </svg>
+        </button>
+        
+        <div class="progress-container">
+            <div class="progress-steps">
+                <div class="progress-step active">
+                    <div class="step-circle"></div>
+                    <span class="step-label">PLANNING</span>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">WRITING</span>
+                </div>
+                <div class="progress-step">
+                    <div class="step-circle"></div>
+                    <span class="step-label">FEEDBACK</span>
+                </div>
+            </div>
+        </div>
+        
+        <button class="notes-btn">
+            📝
+        </button>
+    </nav>
+
+    <main>
+        <div class="stage-container" id="planning-stage">
+            <div class="side-nav">
+                <div class="nav-sections">
+                    <button class="section-btn active" data-section="prompt-section">
+                        <span class="section-icon">📝</span>
+                        Essay Prompt
+                    </button>
+                    <button class="section-btn" data-section="resume-section">
+                        <span class="section-icon">📄</span>
+                        Resume Analysis
+                    </button>
+                    <button class="section-btn" data-section="brainstorm-section">
+                        <span class="section-icon">🤖</span>
+                        AI Chat Assistant
+                    </button>
+                    <button class="section-btn" data-section="topics-section">
+                        <span class="section-icon">💡</span>
+                        Suggested Topics
+                    </button>
+                </div>
+            </div>
+
+            <div class="main-content">
+                <h1>Planning Your Essay</h1>
+                
+                <!-- Add this right after the h1 in the planning stage -->
+                <div class="card prompt-card" id="prompt-section">
+                    <div class="prompt-grid">
+                        <div class="prompt-input-section">
+                            <h2>Essay Prompt</h2>
+                            <div class="prompt-input-container">
+                                <textarea 
+                                    id="essayPrompt" 
+                                    class="prompt-input" 
+                                    placeholder="Paste your essay prompt here..."
+                                    rows="5"
+                                ></textarea>
+                                <div class="prompt-actions">
+                                    <button class="prompt-btn" id="analyzePrompt">Analyze Prompt</button>
+                                    <button class="prompt-btn secondary" id="clearPrompt">Clear</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="prompt-analysis-section">
+                            <h2>Prompt Analysis</h2>
+                            <div class="analysis-content" id="promptAnalysis">
+                                <p class="helper-text">Analysis will appear here after you enter and analyze a prompt.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Resume Upload Card -->
+                <div class="card upload-card" id="resume-section">
+                    <h2>Upload Resume</h2>
+                    <p class="helper-text">Upload your resume to get personalized topic suggestions</p>
+                    <div class="upload-area" id="uploadArea">
+                        <input type="file" id="resumeUpload" accept=".pdf,.doc,.docx" hidden>
+                        <div class="upload-content">
+                            <div class="upload-icon">⬆️</div>
+                            <p>Drag and drop your resume or <span class="upload-link">browse files</span></p>
+                        </div>
+                    </div>
+                    
+                    <!-- Add this new section for relevant activities -->
+                    <div class="relevant-activities hidden" id="relevantActivities">
+                        <h3>Relevant Activities from Your Resume Based on Your Prompt</h3>
+                        <div class="activities-list">
+                            <!-- Activities will be populated here -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Chat Assistant Card -->
+                <div class="card chat-card" id="brainstorm-section">
+                    <h2>AI Brainstorming Assistant</h2>
+                    <div class="chat-container">
+                        <div class="chat-messages" id="chatMessages">
+                            <div class="message bot">
+                                <div class="bot-avatar">🤖</div>
+                                <div class="message-content">
+                                    Hi! I'm here to help you brainstorm essay ideas. Would you like to start with your resume insights or explore topic ideas?
+                                </div>
+                            </div>
+                        </div>
+                        <div class="chat-input">
+                            <input type="text" id="userInput" placeholder="Type your message...">
+                            <button id="sendMessage">Send</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Topic Suggestions Card -->
+                <div class="card suggestions-card" id="topics-section">
+                    <h2>Suggested Topics</h2>
+                    <div class="suggestions-container" id="topicSuggestions">
+                        <!-- Suggestions will be populated by JavaScript -->
+                    </div>
+                    <button class="next-btn">Continue to Writing</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stage-container hidden" id="writing-stage">
+            <div class="writing-section">
+                <div class="prompt-display">
+                    <h3>Your Prompt</h3>
+                    <p id="selectedPrompt"><!-- Will be populated by JavaScript --></p>
+                </div>
+                
+                <div class="writing-container">
+                    <div class="writing-tools">
+                        <div class="tool-btn">
+                            <span class="tool-icon">📊</span>
+                            <div class="count-display">
+                                <span id="wordCount">0 words</span>
+                                <span class="count-divider">•</span>
+                                <span id="charCount">0 characters</span>
+                            </div>
+                        </div>
+                        <button class="tool-btn">
+                            <span class="tool-icon">💾</span>
+                            Save Draft
+                        </button>
+                        <button class="tool-btn">
+                            <span class="tool-icon">✍️</span>
+                            Grammar Check
+                        </button>
+                    </div>
+                    
+                    <div class="editor-container">
+                        <textarea 
+                            class="essay-editor" 
+                            placeholder="Start writing your essay here..."
+                        ></textarea>
+                        
+                        <div class="writing-progress">
+                            <div class="progress-info">
+                                <span>Prompt Adherence</span>
+                                <span class="progress-percentage">70%</span>
+                            </div>
+                            <div class="progress-track">
+                                <div class="progress-fill" style="width: 70%"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="next-btn">Continue to Feedback</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stage-container hidden" id="feedback-stage">
+            <h1>Get Feedback</h1>
+            <div class="card">
+                <h2>AI Writing Assistant</h2>
+                <div class="feedback-section">
+                    <button class="feedback-btn">Check Structure</button>
+                    <button class="feedback-btn">Review Style</button>
+                    <button class="feedback-btn">Suggest Improvements</button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Add this at the end of the body, before scripts -->
+    <div class="notes-popup" id="notesPopup">
+        <div class="notes-content">
+            <div class="notes-header">
+                <h2>Notes</h2>
+                <button class="close-notes">×</button>
+            </div>
+            <textarea 
+                id="userNotes" 
+                placeholder="Type your notes here..."
+                class="notes-textarea"
+            ></textarea>
+            <div class="notes-footer">
+                <button class="save-notes">Save Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
