@@ -9,13 +9,26 @@
 </head>
 <body>
     <nav>
-        <button class="menu-btn">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="6" r="2" fill="currentColor"/>
-                <circle cx="12" cy="12" r="2" fill="currentColor"/>
-                <circle cx="12" cy="18" r="2" fill="currentColor"/>
-            </svg>
-        </button>
+        <div class="menu-container">
+            <button class="menu-btn" id="menuBtn">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="6" r="2" fill="currentColor"/>
+                    <circle cx="12" cy="12" r="2" fill="currentColor"/>
+                    <circle cx="12" cy="18" r="2" fill="currentColor"/>
+                </svg>
+            </button>
+            <div class="menu-dropdown hidden" id="menuDropdown">
+                <div class="menu-header">
+                    <h3>Your Essays</h3>
+                </div>
+                <div class="essay-list" id="essayList">
+                    <!-- Essays will be populated here -->
+                </div>
+                <div class="menu-footer">
+                    <button class="clear-essays-btn">Clear All Essays</button>
+                </div>
+            </div>
+        </div>
         
         <div class="progress-container">
             <div class="progress-steps">
@@ -194,13 +207,73 @@
         </div>
 
         <div class="stage-container hidden" id="feedback-stage">
-            <h1>Get Feedback</h1>
-            <div class="card">
-                <h2>AI Writing Assistant</h2>
-                <div class="feedback-section">
-                    <button class="feedback-btn">Check Structure</button>
-                    <button class="feedback-btn">Review Style</button>
-                    <button class="feedback-btn">Suggest Improvements</button>
+            <div class="feedback-layout">
+                <div class="feedback-editor">
+                    <div class="editor-header">
+                        <h2>Your Essay</h2>
+                        <div class="editor-tools">
+                            <button class="tool-btn">
+                                <span class="tool-icon">💾</span>
+                                Save
+                            </button>
+                            <button class="tool-btn">
+                                <span class="tool-icon">📋</span>
+                                Copy
+                            </button>
+                        </div>
+                    </div>
+                    <div class="essay-content" contenteditable="true">
+                        <!-- Essay content will be loaded here -->
+                    </div>
+                </div>
+                
+                <div class="feedback-sidebar">
+                    <div class="sidebar-tabs">
+                        <button class="tab-btn active" data-tab="stats">Stats</button>
+                        <button class="tab-btn" data-tab="feedback">Feedback</button>
+                    </div>
+                    
+                    <div class="tab-content active" id="stats-tab">
+                        <div class="stat-item">
+                            <span class="stat-label">Readability</span>
+                            <span class="stat-value">Grade 8</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Words</span>
+                            <span class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Characters</span>
+                            <span class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Sentences</span>
+                            <span class="stat-value">0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Paragraphs</span>
+                            <span class="stat-value">0</span>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-content" id="feedback-tab">
+                        <div class="feedback-category">
+                            <h3>Hard to Read Sentences</h3>
+                            <div class="feedback-count">0</div>
+                        </div>
+                        <div class="feedback-category">
+                            <h3>Very Hard to Read Sentences</h3>
+                            <div class="feedback-count">0</div>
+                        </div>
+                        <div class="feedback-category">
+                            <h3>Adverbs</h3>
+                            <div class="feedback-count">0</div>
+                        </div>
+                        <div class="feedback-category">
+                            <h3>Passive Voice</h3>
+                            <div class="feedback-count">0</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

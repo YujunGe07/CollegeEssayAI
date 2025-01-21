@@ -588,4 +588,148 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+
+    // Essay management
+    const menuBtn = document.getElementById('menuBtn');
+    const menuDropdown = document.getElementById('menuDropdown');
+    const essayList = document.getElementById('essayList');
+    const clearEssaysBtn = document.querySelector('.clear-essays-btn');
+
+    // Load saved essays from localStorage
+    let savedEssays = JSON.parse(localStorage.getItem('savedEssays')) || [];
+    let currentEssayId = localStorage.getItem('currentEssayId');
+
+    function saveNewEssay(prompt) {
+        const newEssay = {
+            id: Date.now().toString(),
+            prompt: prompt,
+            date: new Date().toLocaleDateString(),
+            content: '',  // For the actual essay content
+            stage: 'planning'  // Track which stage the essay is in
+        };
+
+        savedEssays.unshift(newEssay);
+        currentEssayId = newEssay.id;
+        
+        localStorage.setItem('savedEssays', JSON.stringify(savedEssays));
+        localStorage.setItem('currentEssayId', currentEssayId);
+        
+        updateEssayList();
+    }
+
+    function updateEssayList() {
+        essayList.innerHTML = savedEssays.map(essay => `
+            <div class="essay-item ${essay.id === currentEssayId ? 'active' : ''}" 
+                 data-essay-id="${essay.id}">
+                <div class="essay-title">${essay.prompt.substring(0, 50)}${essay.prompt.length > 50 ? '...' : ''}</div>
+                <div class="essay-date">${essay.date}</div>
+            </div>
+        `).join('');
+
+        // Add click handlers to essay items
+        document.querySelectorAll('.essay-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const essayId = item.dataset.essayId;
+                loadEssay(essayId);
+            });
+        });
+    }
+
+    function loadEssay(essayId) {
+        const essay = savedEssays.find(e => e.id === essayId);
+        if (essay) {
+            currentEssayId = essayId;
+            localStorage.setItem('currentEssayId', currentEssayId);
+            
+            // Update UI with essay data
+            document.getElementById('essayPrompt').value = essay.prompt;
+            document.getElementById('selectedPrompt').textContent = essay.prompt;
+            
+            // Switch to appropriate stage
+            showStage(`${essay.stage}-stage`);
+            
+            // Close dropdown
+            menuDropdown.classList.add('hidden');
+            
+            // Update essay list to show active state
+            updateEssayList();
+        }
+    }
+
+    // Toggle menu dropdown
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        menuDropdown.classList.toggle('hidden');
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!menuDropdown.contains(e.target) && !menuBtn.contains(e.target)) {
+            menuDropdown.classList.add('hidden');
+        }
+    });
+
+    // Clear all essays
+    clearEssaysBtn.addEventListener('click', () => {
+        if (confirm('Are you sure you want to clear all saved essays?')) {
+            savedEssays = [];
+            currentEssayId = null;
+            localStorage.removeItem('savedEssays');
+            localStorage.removeItem('currentEssayId');
+            updateEssayList();
+        }
+    });
+
+    // Update the analyze prompt button to save the essay
+    analyzePromptBtn.addEventListener('click', () => {
+        const promptText = essayPrompt.value.trim();
+        if (promptText && !savedEssays.some(essay => essay.prompt === promptText)) {
+            saveNewEssay(promptText);
+        }
+        // ... rest of your existing analyze prompt code ...
+    });
+
+    // Initial load
+    updateEssayList();
+
+    // Feedback tab switching
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+
+    tabBtns.forEach(btn => {
+        btn.addEventListener('click', () => {
+            const tabId = btn.dataset.tab;
+            
+            // Update active tab button
+            tabBtns.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            
+            // Show selected tab content
+            tabContents.forEach(content => {
+                if (content.id === `${tabId}-tab`) {
+                    content.classList.add('active');
+                } else {
+                    content.classList.remove('active');
+                }
+            });
+        });
+    });
+
+    // Update stats when essay content changes
+    const essayContent = document.querySelector('.essay-content');
+    
+    function updateStats() {
+        const text = essayContent.textContent;
+        const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+        const chars = text.length;
+        const sentences = text.split(/[.!?]+/).length - 1;
+        const paragraphs = text.split(/\n\s*\n/).length;
+        
+        document.querySelector('#stats-tab .stat-value:nth-child(2)').textContent = words;
+        document.querySelector('#stats-tab .stat-value:nth-child(3)').textContent = chars;
+        document.querySelector('#stats-tab .stat-value:nth-child(4)').textContent = sentences;
+        document.querySelector('#stats-tab .stat-value:nth-child(5)').textContent = paragraphs;
+    }
+
+    essayContent?.addEventListener('input', updateStats);
 }); 
