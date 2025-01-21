@@ -109,6 +109,17 @@ document.addEventListener('DOMContentLoaded', () => {
                         selectedPrompt.textContent = essayPrompt.value.trim() || 'No prompt entered';
                     }
                 }
+                
+                // If moving to feedback stage, transfer the essay content
+                if (stageName === 'feedback-stage') {
+                    const writingEditor = document.querySelector('.essay-editor');
+                    const feedbackContent = document.querySelector('.essay-content');
+                    if (writingEditor && feedbackContent) {
+                        feedbackContent.textContent = writingEditor.value;
+                        // Trigger stats update
+                        updateStats();
+                    }
+                }
             } else {
                 stage.classList.add('hidden');
             }
@@ -722,14 +733,112 @@ document.addEventListener('DOMContentLoaded', () => {
         const text = essayContent.textContent;
         const words = text.trim() ? text.trim().split(/\s+/).length : 0;
         const chars = text.length;
-        const sentences = text.split(/[.!?]+/).length - 1;
-        const paragraphs = text.split(/\n\s*\n/).length;
+        const sentences = text.split(/[.!?]+/).filter(Boolean).length;
         
-        document.querySelector('#stats-tab .stat-value:nth-child(2)').textContent = words;
-        document.querySelector('#stats-tab .stat-value:nth-child(3)').textContent = chars;
-        document.querySelector('#stats-tab .stat-value:nth-child(4)').textContent = sentences;
-        document.querySelector('#stats-tab .stat-value:nth-child(5)').textContent = paragraphs;
+        // Mock calculations - these would be replaced with actual analysis
+        const hardSentences = Math.floor(sentences * 0.25); // Example: 25% of sentences are hard to read
+        const passiveCount = Math.floor(words * 0.05); // Example: 5% of content uses passive voice
+        const readabilityGrade = 8 + Math.floor(Math.random() * 4); // Random grade between 8-11
+        
+        // Update stats display
+        const statValues = document.querySelectorAll('#stats-tab .stat-value');
+        statValues[0].textContent = `Grade ${readabilityGrade}`;
+        statValues[1].textContent = `${hardSentences} of ${sentences} sentences are hard to read`;
+        statValues[2].textContent = `${passiveCount} instances`;
+        statValues[3].textContent = words;
+        statValues[4].textContent = chars;
     }
 
     essayContent?.addEventListener('input', updateStats);
+
+    // Update the "Continue to Feedback" button click handler
+    document.querySelector('.writing-container .next-btn')?.addEventListener('click', () => {
+        const writingEditor = document.querySelector('.essay-editor');
+        const feedbackContent = document.querySelector('.essay-content');
+        if (writingEditor && feedbackContent) {
+            feedbackContent.textContent = writingEditor.value;
+            // Trigger stats update
+            updateStats();
+        }
+    });
+
+    // Feedback popup functionality
+    const viewFeedbackBtn = document.querySelector('.view-feedback-btn');
+    const feedbackPopup = document.getElementById('feedbackPopup');
+    const closeFeedbackBtn = document.querySelector('.close-feedback');
+
+    viewFeedbackBtn?.addEventListener('click', () => {
+        feedbackPopup.classList.add('active');
+    });
+
+    closeFeedbackBtn?.addEventListener('click', () => {
+        feedbackPopup.classList.remove('active');
+    });
+
+    feedbackPopup?.addEventListener('click', (e) => {
+        if (e.target === feedbackPopup) {
+            feedbackPopup.classList.remove('active');
+        }
+    });
+
+    // Close on Escape key
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && feedbackPopup.classList.contains('active')) {
+            feedbackPopup.classList.remove('active');
+        }
+    });
+
+    // Add edit and refresh functionality
+    const editEssayBtn = document.querySelector('.edit-essay-btn');
+    const refreshFeedbackBtn = document.querySelector('.refresh-feedback-btn');
+
+    editEssayBtn?.addEventListener('click', () => {
+        // Go back to writing stage
+        showStage('writing-stage');
+    });
+
+    refreshFeedbackBtn?.addEventListener('click', async () => {
+        const btn = refreshFeedbackBtn;
+        btn.classList.add('loading');
+        btn.disabled = true;
+
+        try {
+            // Simulate feedback refresh
+            await new Promise(resolve => setTimeout(resolve, 1500));
+            
+            // Update stats with slightly different values
+            const text = essayContent.textContent;
+            const words = text.trim() ? text.trim().split(/\s+/).length : 0;
+            const chars = text.length;
+            const sentences = text.split(/[.!?]+/).filter(Boolean).length;
+            
+            // Randomize the analysis slightly
+            const hardSentences = Math.floor(sentences * (0.2 + Math.random() * 0.1));
+            const passiveCount = Math.floor(words * (0.04 + Math.random() * 0.02));
+            const readabilityGrade = 8 + Math.floor(Math.random() * 4);
+            
+            // Update stats display
+            const statValues = document.querySelectorAll('#stats-tab .stat-value');
+            statValues[0].textContent = `Grade ${readabilityGrade}`;
+            statValues[1].textContent = `${hardSentences} of ${sentences} sentences are hard to read`;
+            statValues[2].textContent = `${passiveCount} instances`;
+            statValues[3].textContent = words;
+            statValues[4].textContent = chars;
+
+            // Show success message
+            const originalScore = document.querySelector('.score').textContent;
+            const newGrades = ['A', 'A-', 'B+', 'B'];
+            let newScore = newGrades[Math.floor(Math.random() * newGrades.length)];
+            while (newScore === originalScore) {
+                newScore = newGrades[Math.floor(Math.random() * newGrades.length)];
+            }
+            document.querySelector('.score').textContent = newScore;
+
+        } catch (error) {
+            console.error('Error refreshing feedback:', error);
+        } finally {
+            btn.classList.remove('loading');
+            btn.disabled = false;
+        }
+    });
 }); 

@@ -239,39 +239,40 @@
                             <span class="stat-value">Grade 8</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Words</span>
+                            <span class="stat-label">Sentence Complexity</span>
+                            <span class="stat-value">3 of 12 sentences are hard to read</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Passive Voice</span>
+                            <span class="stat-value">4 instances</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Word Count</span>
                             <span class="stat-value">0</span>
                         </div>
                         <div class="stat-item">
-                            <span class="stat-label">Characters</span>
-                            <span class="stat-value">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Sentences</span>
-                            <span class="stat-value">0</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-label">Paragraphs</span>
+                            <span class="stat-label">Character Count</span>
                             <span class="stat-value">0</span>
                         </div>
                     </div>
                     
                     <div class="tab-content" id="feedback-tab">
-                        <div class="feedback-category">
-                            <h3>Hard to Read Sentences</h3>
-                            <div class="feedback-count">0</div>
-                        </div>
-                        <div class="feedback-category">
-                            <h3>Very Hard to Read Sentences</h3>
-                            <div class="feedback-count">0</div>
-                        </div>
-                        <div class="feedback-category">
-                            <h3>Adverbs</h3>
-                            <div class="feedback-count">0</div>
-                        </div>
-                        <div class="feedback-category">
-                            <h3>Passive Voice</h3>
-                            <div class="feedback-count">0</div>
+                        <div class="feedback-header">
+                            <div class="feedback-score">
+                                <span class="score">A-</span>
+                                <span class="score-label">Overall Grade</span>
+                            </div>
+                            <div class="feedback-actions">
+                                <button class="edit-essay-btn">
+                                    <span class="btn-icon">✏️</span>
+                                    Edit Essay
+                                </button>
+                                <button class="refresh-feedback-btn">
+                                    <span class="btn-icon">🔄</span>
+                                    Refresh Feedback
+                                </button>
+                                <button class="view-feedback-btn">View Detailed Feedback</button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -289,6 +290,51 @@
             <textarea id="userNotes" class="notes-textarea" placeholder="Write your notes here..."></textarea>
             <div class="notes-footer">
                 <button class="save-notes">Save Notes</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add this new feedback modal at the end of body, before scripts -->
+    <div class="feedback-popup" id="feedbackPopup">
+        <div class="feedback-modal">
+            <div class="feedback-modal-header">
+                <h2>Detailed Feedback</h2>
+                <button class="close-feedback">×</button>
+            </div>
+            <div class="feedback-modal-content">
+                <div class="feedback-sections">
+                    <div class="feedback-section">
+                        <h3>Strengths</h3>
+                        <ul class="feedback-list">
+                            <li>Strong thesis statement that clearly outlines your main argument</li>
+                            <li>Effective use of personal experiences to support your points</li>
+                            <li>Clear organization and logical flow between paragraphs</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h3>Areas for Improvement</h3>
+                        <ul class="feedback-list">
+                            <li>Consider adding more specific examples in paragraph 3</li>
+                            <li>The conclusion could be stronger by reinforcing your main points</li>
+                            <li>Watch out for passive voice in several sentences</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="feedback-section">
+                        <h3>Detailed Comments</h3>
+                        <div class="teacher-comments">
+                            <p>Your essay demonstrates a strong understanding of the prompt and presents a compelling narrative. The introduction effectively hooks the reader, and your personal experiences add authenticity to your arguments.</p>
+                            <p>To strengthen your essay further, focus on:</p>
+                            <ul>
+                                <li>Developing your analysis in the third paragraph</li>
+                                <li>Varying sentence structure for better flow</li>
+                                <li>Adding transitions between some paragraphs</li>
+                            </ul>
+                            <p class="teacher-signature">- Professor Williams</p>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
