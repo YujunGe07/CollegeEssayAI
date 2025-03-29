@@ -1,4 +1,5 @@
 document.addEventListener('DOMContentLoaded', () => {
+    let chatHistory = [];
     const uploadArea = document.getElementById('uploadArea');
     const resumeUpload = document.getElementById('resumeUpload');
     const essayEditor = document.querySelector('.essay-editor');
@@ -75,17 +76,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Update progress navigation
     function updateProgress(stageName) {
-        const progressSteps = document.querySelectorAll('.progress-step');
-        const stages = ['planning-stage', 'writing-stage', 'feedback-stage'];
-        const currentIndex = stages.indexOf(stageName);
+        const steps = document.querySelectorAll('.progress-step');
+        const currentIndex = ['planning-stage', 'writing-stage', 'feedback-stage'].indexOf(stageName);
         
-        progressSteps.forEach((step, index) => {
-            step.classList.remove('active', 'current', 'completed');
-            
-            if (index === currentIndex) {
-                step.classList.add('current');
-            } else if (index < currentIndex) {
+        steps.forEach((step, index) => {
+            if (index < currentIndex) {
                 step.classList.add('completed');
+            } else if (index === currentIndex) {
+                step.classList.add('current');
+            } else {
+                step.classList.remove('completed', 'current');
             }
         });
 
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(content, false);
     }
 
-    function handleUserMessage() {
+    async function handleUserMessage() {
         const message = userInput.value.trim();
         if (!message) return;
         
@@ -223,11 +223,30 @@ document.addEventListener('DOMContentLoaded', () => {
         // Analyze message and potentially add suggestions
         analyzeMessageForSuggestions(message);
         
-        // Simulate bot response
-        setTimeout(() => {
-            const response = generateBotResponse(message);
-            addBotMessage(response);
-        }, 1000);
+        try {
+            const res = await fetch('http://localhost:5000/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    message: message,
+                    history: [...chatHistory, { content: message, isUser: true }]
+                })
+            });
+        
+            const data = await res.json();
+            if (data.response) {
+                addBotMessage(data.response);
+                chatHistory.push({ content: message, isUser: true });
+                chatHistory.push({ content: data.response, isUser: false });
+            } else {
+                addBotMessage("Something went wrong.");
+            }
+        } catch (err) {
+            console.error(err);
+            addBotMessage("Error talking to the assistant.");
+        }
+        
+        
     }
 
     if (userInput && sendMessage) {
@@ -276,11 +295,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // Update the resume handler function
-    function handleResumeUpload(file) {
+    const API_URL = 'http://localhost:5000';
+
+    async function handleResumeUpload(file) {
         const uploadContent = uploadArea.querySelector('.upload-content');
         const relevantActivities = document.getElementById('relevantActivities');
+        const promptText = document.getElementById('essayPrompt').value.trim();
         
-        // Show loading state with spinner and progress bar
+        // Show loading state
         uploadContent.innerHTML = `
             <div class="loading-spinner"></div>
             <p>Analyzing ${file.name}...</p>
@@ -289,32 +311,45 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
 
-        // Start progress animation
-        const progressBar = uploadContent.querySelector('.progress-bar');
-        progressBar.style.width = '0%';
-        setTimeout(() => {
-            progressBar.style.width = '100%';
-        }, 100);
-        
-        // Simulate resume analysis
-        setTimeout(() => {
-            const promptText = document.getElementById('essayPrompt').value.trim();
-            const activities = analyzeResumeActivities(promptText);
+        try {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('prompt', promptText);
+
             
-            // Display relevant activities
-            const activitiesList = relevantActivities.querySelector('.activities-list');
-            activitiesList.innerHTML = activities.map(activity => `
-                <div class="activity-item">
-                    <div class="activity-title">${activity.title}</div>
-                    <div class="activity-relevance">
-                        ${activity.relevance}
-                        <span class="relevance-score">${activity.score}% match</span>
+            const response = await fetch(`${API_URL}/api/upload-resume`, {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) throw new Error('Server error');
+            const data = await response.json();
+            
+            // Display relevant experiences
+            if (data.relevant_experiences && data.relevant_experiences.length > 0) {
+                const activitiesList = relevantActivities.querySelector('.activities-list');
+                activitiesList.innerHTML = data.relevant_experiences.map(exp => `
+                    <div class="activity-item">
+                        <div class="activity-title">${exp.text}</div>
+                        <div class="activity-relevance">
+                            ${exp.relevance}
+                            <span class="relevance-score">${exp.score}% match</span>
+                        </div>
+                        ${exp.matching_keywords.length ? `
+                            <div class="matching-keywords">
+                                Matching keywords: ${exp.matching_keywords.join(', ')}
+                            </div>
+                        ` : ''}
+                        ${exp.key_skills.length ? `
+                            <div class="key-skills">
+                                Key skills: ${exp.key_skills.join(', ')}
+                            </div>
+                        ` : ''}
                     </div>
-                </div>
-            `).join('');
-            
-            // Show the activities section
-            relevantActivities.classList.remove('hidden');
+                `).join('');
+                
+                relevantActivities.classList.remove('hidden');
+            }
             
             // Show success state
             uploadContent.innerHTML = `
@@ -323,8 +358,16 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
             
             // Add suggestions based on analysis
-            addBotMessage("I've analyzed your resume and the essay prompt. Here are some relevant experiences you might want to write about:");
-        }, 2000);
+            addBotMessage("I've analyzed your resume against the prompt and found relevant experiences. Would you like to explore any of these in your essay?");
+            
+        } catch (error) {
+            console.error('Error:', error);
+            uploadContent.innerHTML = `
+                <div class="upload-icon">❌</div>
+                <p>Error: ${error.message}</p>
+                <p class="upload-retry">Click to try again</p>
+            `;
+        }
     }
 
     // Add this function to analyze resume content against prompt
@@ -516,57 +559,95 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Prompt analysis functionality
-    if (analyzePromptBtn && clearPromptBtn) {
-        analyzePromptBtn.addEventListener('click', () => {
-            const promptText = essayPrompt.value.trim();
-            if (!promptText) {
-                alert('Please enter an essay prompt first.');
-                return;
-            }
+    // Add this function to handle prompt analysis
+    async function analyzePrompt(promptText) {
+        try {
+            const response = await fetch(`${API_URL}/api/analyze-prompt`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ prompt: promptText })
+            });
+
+            if (!response.ok) throw new Error('Server error');
+            return (await response.json()).analysis;
+        } catch (error) {
+            console.error('Error:', error);
+            throw new Error('Failed to analyze prompt');
+        }
+    }
+
+    // Update the existing analyze prompt button click handler
+    analyzePromptBtn.addEventListener('click', async () => {
+        const promptText = essayPrompt.value.trim();
+        if (!promptText) {
+            alert('Please enter an essay prompt first.');
+            return;
+        }
+        
+        const analysisDiv = document.getElementById('promptAnalysis');
+        analysisDiv.innerHTML = '<p>Analyzing prompt...</p>';
+        
+        try {
+            const analysis = await analyzePrompt(promptText);
             
-            const analysisDiv = document.getElementById('promptAnalysis');
-            analysisDiv.innerHTML = '<p>Analyzing prompt...</p>';
+            // Create analysis HTML
+            const analysisHTML = `
+                <h3>Key Themes:</h3>
+                <ul>
+                    ${analysis.themes.map(theme => `<li><span class="analysis-highlight">${theme}</span></li>`).join('')}
+                </ul>
+                
+                <h3>Important Keywords:</h3>
+                <ul>
+                    ${analysis.keywords.map(kw => 
+                        `<li><span class="analysis-highlight">${kw.word}</span> (${kw.frequency})</li>`
+                    ).join('')}
+                </ul>
+                
+                ${analysis.entities.length ? `
+                    <h3>Key Entities:</h3>
+                    <ul>
+                        ${analysis.entities.map(entity => 
+                            `<li><span class="analysis-highlight">${entity.text}</span> (${entity.label})</li>`
+                        ).join('')}
+                    </ul>
+                ` : ''}
+                
+                <h3>Main Topics:</h3>
+                <ul>
+                    ${analysis.main_topics.map(topic => 
+                        `<li><span class="analysis-highlight">${topic}</span></li>`
+                    ).join('')}
+                </ul>
+            `;
             
-            setTimeout(() => {
-                const analysis = `
-                    <h3>Key Elements:</h3>
-                    <ul>
-                        <li><span class="analysis-highlight">Type:</span> Personal reflection</li>
-                        <li><span class="analysis-highlight">Focus:</span> Individual growth or experience</li>
-                        <li><span class="analysis-highlight">Time frame:</span> Specific moment or period</li>
-                    </ul>
-                    <h3>Suggested Approaches:</h3>
-                    <ul>
-                        <li>Consider a moment of personal transformation</li>
-                        <li>Focus on the learning outcome</li>
-                        <li>Include specific details and reflection</li>
-                    </ul>
-                `;
-                
-                analysisDiv.innerHTML = analysis;
-                
-                // Add suggestions based on the analysis
+            analysisDiv.innerHTML = analysisHTML;
+            
+            // Add suggestions based on themes
+            analysis.themes.forEach(theme => {
                 addSuggestion(
-                    "Personal Growth Story",
+                    `Essay about ${theme}`,
                     "Based on prompt analysis"
                 );
-                
-                addSuggestion(
-                    "Key Learning Moment",
-                    "Matches prompt requirements"
-                );
-                
-                // Add a bot message about the analysis
-                addBotMessage("I've analyzed the prompt. Would you like to explore any of these suggested approaches?");
-            }, 1500);
-        });
-
-        clearPromptBtn.addEventListener('click', () => {
-            essayPrompt.value = '';
-            essayPrompt.focus();
-        });
-    }
+            });
+            
+            // Save the essay if it's new
+            if (!savedEssays.some(essay => essay.prompt === promptText)) {
+                saveNewEssay(promptText);
+            }
+            
+            // Add a bot message about the analysis
+            addBotMessage("I've analyzed your prompt and identified key themes. Would you like to explore any of these topics further?");
+            
+        } catch (error) {
+            analysisDiv.innerHTML = `
+                <p class="error-message">Error analyzing prompt: ${error.message}</p>
+                <p>Please try again.</p>
+            `;
+        }
+    });
 
     // Add resume upload event listeners
     if (uploadArea && resumeUpload) {
@@ -689,15 +770,6 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.removeItem('currentEssayId');
             updateEssayList();
         }
-    });
-
-    // Update the analyze prompt button to save the essay
-    analyzePromptBtn.addEventListener('click', () => {
-        const promptText = essayPrompt.value.trim();
-        if (promptText && !savedEssays.some(essay => essay.prompt === promptText)) {
-            saveNewEssay(promptText);
-        }
-        // ... rest of your existing analyze prompt code ...
     });
 
     // Initial load
